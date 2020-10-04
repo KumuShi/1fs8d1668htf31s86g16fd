@@ -220,6 +220,7 @@ client.on("message", async message => {
     else{
       iduser = args[0].substring(3,args[0].length-1)
       console.log(iduser)
+      console.log(message.mentions.users.first().username)
       uname = message.guild.members.cache.get(iduser).username
       ttext = message.author.username + " hugs " + uname + " !"
     }
