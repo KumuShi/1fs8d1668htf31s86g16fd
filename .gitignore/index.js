@@ -240,7 +240,7 @@ client.on("message", async message => {
     message.channel.send({ files: [file], embed : msg })
   }
 
-  if(command == "play"){
+  /*if(command == "play"){
     players = fs.readFileSync("players.json")
     players = JSON.parse(players)
     if(message.author.id in players){
@@ -281,7 +281,7 @@ client.on("message", async message => {
     fs.writeFileSync("players.json", players, (err)=>{
       if(err) throw err;
     })
-  }
+  }*/
 
   /*if(message.channel.type == "dm"){
     continuation = 1
@@ -392,7 +392,7 @@ client.on("message", async message => {
     }
   }*/
 
-  if(command === "show"){
+  /*if(command === "show"){
     players = fs.readFileSync("players.json")
     players = JSON.parse(players)
     if(message.author.id in players){
@@ -439,7 +439,7 @@ client.on("message", async message => {
         if(err) throw err;
       })
     }
-  }
+  }*/
 
   if(command == "config" && message.member.hasPermission("ADMINISTRATOR")){
     if(args[0] != undefined){
@@ -550,7 +550,7 @@ client.on("message", async message => {
     }
     else{
       if(message.member.hasPermission("ADMINISTRATOR")){
-        reason = "Banned without any reason."
+        reason = "None"
         if(args[1] != undefined){
           reason = message.content.substring(6 + args[0].length, message.content.length)
         }
@@ -604,13 +604,29 @@ client.on("message", async message => {
             name: 'Config [<[logs or wchannel] channel id> or <antilink [on or off]>]',
             value: "Returns the config pannel / change configs\nwchannel is the welcoming channel",
         },
-        {
+        /*{
           name: 'Issue [text] (dm only)',
           value: "Create a ticket for bot creators",
         },
         {
           name: 'Ans [text]',
           value: "Return the text as an answer to the ticket launcher",
+        },*/
+        {
+          name: 'Rem [--nsfw or number]',
+          value: 'Send a Rem pic'
+        },
+        {
+          name: 'Mute member time <reason>',
+          value: 'Mute a member'
+        },
+        {
+          name: 'Kick member <reason>',
+          value: 'Kick a member'
+        },
+        {
+          name: 'Ban member <reason>',
+          value: 'Ban a member'
         },
         {
           name: 'Link to invite the bot',
@@ -629,7 +645,7 @@ client.on("message", async message => {
     }
     else{
       if(message.member.hasPermission("ADMINISTRATOR")){
-        reason = "Kicked without any reason."
+        reason = "None"
         if(args[1] != undefined){
           reason = message.content.substring(6 + args[0].length, message.content.length)
         }
@@ -699,7 +715,7 @@ client.on("message", async message => {
               }
             }
           }
-          reason = "Muted without any reason."
+          reason = "None"
           if(args[2] != undefined){
             reason = message.content.substring(8 + args[0].length + args[1].length, message.content.length)
           }
