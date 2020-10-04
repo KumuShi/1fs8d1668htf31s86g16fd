@@ -214,7 +214,7 @@ client.on("message", async message => {
       rnmbr = Math.random()*Liste_GIF[command]
     }
     rnmbr = Math.ceil(rnmbr)
-    if(args[0] != undefined && message.guild.member(args[0].substring(3,args[0].length-1)){
+    if(args[0] != undefined && message.guild.member(args[0].substring(3,args[0].length-1))){
       ttext = message.author.username + " hugs " + message.mentions.users.first().username + " !"
     }
     else{
