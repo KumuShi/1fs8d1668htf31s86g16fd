@@ -14,8 +14,6 @@ const config = require("./config.json");
 const fs = require('fs');
 const { error } = require("console");
 
-url = "https://discordapp.com/oauth2/authorize?client_id=738095192904564876&scope=bot&permissions=2146958847"
-
 Liste_IMG = {
   "rem" : 4,
   "nsfw" : {
@@ -614,6 +612,10 @@ client.on("message", async message => {
           name: 'Ans [text]',
           value: "Return the text as an answer to the ticket launcher",
         },
+        {
+          name: 'Link to invite the bot',
+          value: 'https://discordapp.com/oauth2/authorize?client_id=738095192904564876&scope=bot&permissions=2146958847'
+        }
       ],
       timestamp: new Date(),
     };
