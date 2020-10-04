@@ -630,7 +630,7 @@ client.on("message", async message => {
         },
         {
           name: 'Link to invite the bot',
-          value: 'https://discordapp.com/oauth2/authorize?client_id=738095192904564876&scope=bot&permissions=2146958847'
+          value: 'https://discordapp.com/oauth2/authorize?client_id=710824448831389696&scope=bot&permissions=2146958847'
         }
       ],
       timestamp: new Date(),
