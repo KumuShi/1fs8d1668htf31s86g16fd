@@ -209,12 +209,12 @@ client.on("message", async message => {
   }
 
   if(command === "hug"){
-    if(args[0] == undefined){
+    rnmbr = Math.random()*Liste_GIF[command]
+    while(rnmbr == 0){
       rnmbr = Math.random()*Liste_GIF[command]
-      while(rnmbr == 0){
-        rnmbr = Math.random()*Liste_GIF[command]
-      }
-      rnmbr = Math.ceil(rnmbr)
+    }
+    rnmbr = Math.ceil(rnmbr)
+    if(args[0] == undefined){
       ttext = message.author.username + " hugs me ! owo"
     }
     else{
