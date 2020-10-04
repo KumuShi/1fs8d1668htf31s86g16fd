@@ -214,15 +214,11 @@ client.on("message", async message => {
       rnmbr = Math.random()*Liste_GIF[command]
     }
     rnmbr = Math.ceil(rnmbr)
-    if(args[0] == undefined){
-      ttext = message.author.username + " hugs me ! owo"
+    if(args[0] != undefined && message.guild.members.cache.find(args[0].substring(3,args[0].length-1))){
+      ttext = message.author.username + " hugs " + message.mentions.users.first().username + " !"
     }
     else{
-      iduser = args[0].substring(3,args[0].length-1)
-      console.log(iduser)
-      console.log(message.mentions.users.first().username)
-      uname = message.guild.members.cache.get(iduser).username
-      ttext = message.author.username + " hugs " + uname + " !"
+      ttext = message.author.username + " hugs me ! owo"
     }
     lien = "/GIF/hug/" + rnmbr + ".gif"
     file = new Discord.MessageAttachment('.' + lien);
