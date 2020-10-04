@@ -218,7 +218,7 @@ client.on("message", async message => {
       ttext = message.author.username + " hugs me ! owo"
     }
     else{
-      ttext = message.author.username + " hugs " + args[0] + " !"
+      ttext = message.author.username + " hugs " + message.guild.members.cache.get(args[0].substring(3,args[0].length-1).username + " !"
     }
     lien = "/GIF/hug/" + rnmbr + ".gif"
     file = new Discord.MessageAttachment('.' + lien);
