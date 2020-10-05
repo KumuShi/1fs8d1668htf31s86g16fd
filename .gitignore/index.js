@@ -231,7 +231,7 @@ client.on("message", async message => {
       }
     }
     else{
-      ttext = 'You hugged me ! owo"
+      ttext = "You hugged me ! owo"
     }
     lien = "/GIF/hug/" + rnmbr + ".gif"
     file = new Discord.MessageAttachment('.' + lien);
