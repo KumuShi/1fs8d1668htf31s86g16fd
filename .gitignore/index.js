@@ -51,20 +51,18 @@ client.on("guildMemberAdd", (user)=>{
     timestamp: new Date()
   };
   user.send({ embed : msg })
-  if(message.guild.id in servers){
-    if(servers[message.guild.id]["wchannel"] != 0){
-      channel = message.guild.channels.cache.get(servers[message.guild.id]["wchannel"])
-      msg = {
-        color: 0x0099ff,
-        title: "New member",
-        description: user.displayName + " joined the server !",
-        /*thumbnail: {
-          url: "member pfp",
-        },*/
-        timestamp: new Date(),
-      };
-      channel.send({ embed : msg })
-    }
+  if(servers[user.guild.id]["wchannel"] != 0){
+    channel = user.guild.channels.cache.get(servers[user.guild.id]["wchannel"])
+    msg = {
+      color: 0x0099ff,
+      title: "New member",
+      description: user.displayName + " joined the server !",
+      /*thumbnail: {
+        url: "member pfp",
+      },*/
+      timestamp: new Date()
+    };
+    channel.send({ embed : msg })
   }
 })
 
@@ -83,21 +81,27 @@ client.on("message", async message => {
 
   if(message.channel.type != "dm"){
     if(message.guild.id in servers){
-      if(message.content.includes("http") || message.content.includes("www") && servers[message.guild.id]["antilink"] == "on"){
-        message.channel.send("You can't use a link while the antilink is on !")
-        message.delete().catch(error);
-        if(servers[message.guild.id]["logs"] != "0"){
-          channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
-          msg = {
-            color: 0x0099ff,
-            title: "Antikink",
-            description: message.author.username + ' typed a link !\nThe message was :\n' + message.content,
-            /*thumbnail: {
-              url: "member pfp",
-            },*/
-            timestamp: new Date(),
-          };
-          channel.send({ embed : msg })
+      if(servers[message.guild.id]["antilink"] == "on"){
+        if(message.content.includes("http") || message.content.includes("www")){
+          if(message.member.hasPermission("ADMINISTRATOR")){
+          }
+          else{
+            message.channel.send("You can't use a link while the antilink is on !")
+            message.delete().catch(error);
+            if(servers[message.guild.id]["logs"] != "0"){
+              channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
+              msg = {
+                color: 0x0099ff,
+                title: "Antikink",
+                description: message.author.username + ' typed a link !\nThe message was :\n' + message.content,
+                /*thumbnail: {
+                  url: "member pfp",
+                },*/
+                timestamp: new Date(),
+              };
+              channel.send({ embed : msg })
+            }
+          }
         }
       }
     }
@@ -214,11 +218,20 @@ client.on("message", async message => {
       rnmbr = Math.random()*Liste_GIF[command]
     }
     rnmbr = Math.ceil(rnmbr)
-    if(args[0] != undefined && message.guild.member(args[0].substring(3,args[0].length-1))){
-      ttext = message.author.username + " hugs " + message.mentions.users.first().username + " !"
+    if(args[0] != undefined){
+      if(args[0].length > 6){
+        if(message.guild.members.cache.find(n => n.id === args[0].substring(3,args[0].length-1)) != undefined){
+          if(args[0].substring(3,args[0].length-1) == message.author.id){
+            ttext =  "You needs a hugs ...awww take that !"
+          }
+          else{
+            ttext = "You hugged " + message.guild.members.cache.get(args[0].substring(3,args[0].length-1)).displayName + " !"
+          }
+        }
+      }
     }
     else{
-      ttext = message.author.username + " hugs me ! owo"
+      ttext = 'You hugged me ! owo"
     }
     lien = "/GIF/hug/" + rnmbr + ".gif"
     file = new Discord.MessageAttachment('.' + lien);
@@ -255,7 +268,6 @@ client.on("message", async message => {
       if(err) throw err;
     })
   }
-
   if(command == "gacha"){
     players = fs.readFileSync("players.json")
     players = JSON.parse(players)
@@ -283,7 +295,7 @@ client.on("message", async message => {
     })
   }*/
 
-  /*if(message.channel.type == "dm"){
+  if(message.channel.type == "dm"){
     continuation = 1
     if(command == "issue"){
       tickets = fs.readFileSync("tickets.json")
@@ -320,9 +332,9 @@ client.on("message", async message => {
         if(err) throw err;
       })
     }
-  }*/
+  }
 
-  /*if(command === "issues" && message.member.hasPermission("ADMINISTRATOR")){
+  if(command === "issues" && message.member.hasPermission("ADMINISTRATOR") && message.guild.id == "762743573966749756"){
     tickets = fs.readFileSync("tickets.json")
     tickets = JSON.parse(tickets)
     if('1' in tickets){
@@ -347,9 +359,9 @@ client.on("message", async message => {
     fs.writeFileSync("tickets.json", tickets, (err)=>{
       if(err) throw err;
     })
-  }*/
+  }
 
-  /*if(command === "ans" && message.member.hasPermission("ADMINISTRATOR")){
+  if(command === "ans" && message.member.hasPermission("ADMINISTRATOR") && message.guild.id == "762743573966749756"){
     if(servers[message.guild.id]["issues"] != "0"){
       if(servers[message.guild.id]["issues"] == message.channel.id){
         tickets = fs.readFileSync("tickets.json")
@@ -390,7 +402,7 @@ client.on("message", async message => {
     else{
       message.channel.send("Please use first " + config.prefix + "config issues <channelid or channeltag> to choose a specific channel.")
     }
-  }*/
+  }
 
   /*if(command === "show"){
     players = fs.readFileSync("players.json")
@@ -413,7 +425,6 @@ client.on("message", async message => {
       if(err) throw err;
     })
   }
-
   if(message.author.id == "705476118865772604"){
     if(command == "destroy"){
       players = fs.readFileSync("players.json")
@@ -455,7 +466,7 @@ client.on("message", async message => {
             message.channel.send("Changed !")
             servers[message.guild.id][args[0]] = args[1]
             if(servers[message.guild.id]["wchannel"] != "0"){
-              channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
+              channel = message.guild.channels.cache.get(servers[message.guild.id]["wchannel"])
               msg = {
                 color: 0x0099ff,
                 title: "Configs",
@@ -629,6 +640,10 @@ client.on("message", async message => {
           value: 'Ban a member'
         },
         {
+          name: 'Issue <text> (ONLY IN DM)',
+          value: 'Send a dm to my cretors about your(s) issue(s)'
+        },
+        {
           name: 'Link to invite the bot',
           value: 'https://discordapp.com/oauth2/authorize?client_id=710824448831389696&scope=bot&permissions=2146958847'
         }
@@ -785,7 +800,7 @@ client.on("message", async message => {
           }
           listech = message.guild.channels.cache.keyArray()
           for(i = 0; i < listech.length; i++){
-            message.guild.channels.cache.get(listech[i]).updateOverwrite(message.guild.roles.cache.find(x => x.name == "muted"), {SEND_MESSAGES: false}) //overwritePermissions("muted", {SEND_MESSAGES: false})
+            message.guild.channels.cache.get(listech[i]).updateOverwrite(message.guild.roles.cache.get(message.guild.roles.cache.find(x => x.name == "muted").id), {SEND_MESSAGES: false}) //overwritePermissions("muted", {SEND_MESSAGES: false})
           }
           message.guild.members.cache.get(args[0].substring(3,args[0].length-1)).roles.add(message.guild.roles.cache.find(r => r.name === "muted"))
           setTimeout(() => {
@@ -890,5 +905,6 @@ client.on("message", async message => {
     if(err) throw err;
   })
 });
+
 
 // client.login(process.env.TOKEN);
