@@ -362,45 +362,40 @@ client.on("message", async message => {
   }
 
   if(command === "ans" && message.member.hasPermission("ADMINISTRATOR") && message.guild.id == "762743573966749756"){
-    if(servers[message.guild.id]["issues"] != "0"){
-      if(servers[message.guild.id]["issues"] == message.channel.id){
-        tickets = fs.readFileSync("tickets.json")
-        tickets = JSON.parse(tickets)
-        if('1' in tickets){
-          msg = message.content.substring(5, message.content.length)
-          myembed = {
-            color: 0x0099ff,
-            title: 'Here\'s your response !',
-            description: "Asking : " + tickets["1"][1] + "\nResponse by " + message.author.username + " : " + msg,
-            timestamp: new Date(),
-            footer: {
-              text: 'Ticket 1' + "/" + parseInt(Object.keys(tickets).length),
-            }
-          };
-          client.users.cache.get(tickets["1"][0]).send({ embed : myembed })
-          delete tickets["1"];
-          if(servers[message.guild.id]["issues"] != "0"){
-            channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
-            msg = {
-              color: 0x0099ff,
-              title: "Issues",
-              description: message.author.username + ' answered to an issue !',
-              timestamp: new Date(),
-            };
-            channel.send({ embed : msg })
+    if("762779496108523522" == message.channel.id){
+      tickets = fs.readFileSync("tickets.json")
+      tickets = JSON.parse(tickets)
+      if('1' in tickets){
+        msg = message.content.substring(5, message.content.length)
+        myembed = {
+          color: 0x0099ff,
+          title: 'Here\'s your response !',
+          description: "Asking : " + tickets["1"][1] + "\nResponse by " + message.author.username + " : " + msg,
+          timestamp: new Date(),
+          footer: {
+            text: 'Ticket 1' + "/" + parseInt(Object.keys(tickets).length),
           }
+        };
+        client.users.cache.get(tickets["1"][0]).send({ embed : myembed })
+        delete tickets["1"];
+        if(servers[message.guild.id]["issues"] != "0"){
+          channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
+          msg = {
+            color: 0x0099ff,
+            title: "Issues",
+            description: message.author.username + ' answered to an issue !',
+            timestamp: new Date(),
+          };
+          channel.send({ embed : msg })
         }
-        else{
-          message.channel.send("You answered to nothing !")
-        }
-        tickets = JSON.stringify(tickets)
-        fs.writeFileSync("tickets.json", tickets, (err)=>{
-          if(err) throw err;
-        })
       }
-    }
-    else{
-      message.channel.send("Please use first " + config.prefix + "config issues <channelid or channeltag> to choose a specific channel.")
+      else{
+        message.channel.send("You answered to nothing !")
+      }
+      tickets = JSON.stringify(tickets)
+      fs.writeFileSync("tickets.json", tickets, (err)=>{
+        if(err) throw err;
+      })
     }
   }
 
