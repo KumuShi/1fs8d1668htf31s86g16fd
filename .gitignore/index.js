@@ -378,16 +378,14 @@ client.on("message", async message => {
         };
         client.users.cache.get(tickets["1"][0]).send({ embed : myembed })
         delete tickets["1"];
-        if(servers[message.guild.id]["issues"] != "0"){
-          channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
-          msg = {
-            color: 0x0099ff,
-            title: "Issues",
-            description: message.author.username + ' answered to an issue !',
-            timestamp: new Date(),
-          };
-          channel.send({ embed : msg })
-        }
+        channel = message.guild.channels.cache.get("762779496108523522")
+        msg = {
+          color: 0x0099ff,
+          title: "Issues",
+          description: message.author.username + ' answered to an issue !',
+          timestamp: new Date(),
+        };
+        channel.send({ embed : msg })
       }
       else{
         message.channel.send("You answered to nothing !")
