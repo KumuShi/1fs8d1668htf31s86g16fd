@@ -35,6 +35,29 @@ client.on("ready", () => {
   client.user.setActivity(`master's commands 🌸`, { type: 'WATCHING' });
 });
 
+/*client.on("messageReactionAdd", async (reaction, user)  =>{
+  if(message.channel.type != "dm"){
+    if(message.guild.id in servers){
+    }
+    else{
+      servers[message.guild.id] = {"wchannel" : "0", "logs" : "0", "reactionrole" : {}, "antilink" : "off", "prefix" : "!", "issues":"762779496108523522"}
+    }
+    if(reaction.message.guild.id in Object.keys(servers[reaction.message.guild.id]["reactionrole"])){
+    }
+    else{
+      if(servers[reaction.message.guild.id]["reactionrole"] != undefined){
+        if(reaction.message.channel.id in servers[reaction.message.guild.id]["reactionrole"]){
+          if(reaction.message.id in servers[reaction.message.guild.id]["reactionrole"][reaction.message.channel.id]){
+            console.log(reaction.emoji)
+          }
+        }
+      }
+    }
+  }
+  console.log(reaction.message.guild.id)
+  console.log("han")
+})*/
+
 client.on("guildMemberAdd", (user)=>{
   servers = fs.readFileSync("serverconfigs.json")
   servers = JSON.parse(servers)
@@ -76,10 +99,9 @@ client.on("message", async message => {
   
   // Let's go with a few common example commands! Feel free to delete or change those.
 
-  servers = fs.readFileSync("serverconfigs.json")
-  servers = JSON.parse(servers)
-
   if(message.channel.type != "dm"){
+    servers = fs.readFileSync("serverconfigs.json")
+    servers = JSON.parse(servers)
     if(message.guild.id in servers){
       if(servers[message.guild.id]["antilink"] == "on"){
         if(message.content.includes("http") || message.content.includes("www")){
@@ -106,19 +128,59 @@ client.on("message", async message => {
       }
     }
     else{
-      servers[message.guild.id] = {"wchannel" : "0", "logs" : "0", "reactionrole" : {}, "antilink" : "off"}
+      servers[message.guild.id] = {"wchannel" : "0", "logs" : "0", "reactionrole" : {},"spawnchannel":{},"onlysp":"0","compteur" : 0, "toget" : Math.round(Math.random()*100)+1, "antilink" : "off", "prefix" : "!", "issues":"762779496108523522"}
     }
+    prefix = servers[message.guild.id]["prefix"]
+    servers[message.guild.id]["compteur"] += 1
+    if(servers[message.guild.id]["compteur"] >= servers[message.guild.id]["toget"]){
+      if(servers[message.guild.id]["onlysp"] == "0"){
+        if(servers[message.guild.id]["spawnchannel"][message.channel.id] != 0){
+
+        }
+        else{
+          n = Math.round(Math.random()*98) + 1
+          servers[message.guild.id]["spawnchannel"][message.channel.id] = n
+          message.channel.send("message de spawn " + n)
+        }
+      }
+      else{
+        if(message.guild.channels.cache.find(ch => ch.id === servers[message.guild.id]["onlysp"]) == undefined){
+          servers[message.guild.id]["onlysp"] = "0"
+        }
+        else{
+          if(servers[message.guild.id]["spawnchannel"][servers[message.guild.id]["onlysp"]] != 0 && servers[message.guild.id]["spawnchannel"][servers[message.guild.id]["onlysp"]] != undefined){
+
+          }
+          else{
+            n = Math.round(Math.random()*98) + 1
+            servers[message.guild.id]["spawnchannel"][servers[message.guild.id]["onlysp"]] = n
+            message.channel.send("message de spawn " + n)
+          }
+          channel = message.guild.channels.cache.get(servers[message.guild.id]["onlysp"])
+        }
+      }
+    }
+    servers = JSON.stringify(servers)
+    fs.writeFileSync("serverconfigs.json", servers, (err)=>{
+      if(err) throw err;
+    })
   }
+  else{
+    prefix = "!"
+  }
+
+  servers = fs.readFileSync("serverconfigs.json")
+  servers = JSON.parse(servers)
 
   // Also good practice to ignore any message that does not start with our prefix, 
   // which is set in the configuration file.
-  if(message.content.indexOf(config.prefix) !== 0) return;
+  if(message.content.indexOf(prefix) !== 0) return;
   
   // Here we separate our "command" name, and our "arguments" for the command. 
   // e.g. if we have the message "+say Is this the real life?" , we'll get the following:
   // command = say
   // args = ["Is", "this", "the", "real", "life?"]
-  const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
+  const args = message.content.slice(prefix.length).trim().split(/ +/g);
   const command = args.shift().toLowerCase();
   
   if(command === "ping") {
@@ -219,19 +281,10 @@ client.on("message", async message => {
     }
     rnmbr = Math.ceil(rnmbr)
     if(args[0] != undefined){
-      if(args[0].length > 6){
-        if(message.guild.members.cache.find(n => n.id === args[0].substring(3,args[0].length-1)) != undefined){
-          if(args[0].substring(3,args[0].length-1) == message.author.id){
-            ttext =  "You needs a hugs ...awww take that !"
-          }
-          else{
-            ttext = "You hugged " + message.guild.members.cache.get(args[0].substring(3,args[0].length-1)).displayName + " !"
-          }
-        }
-      }
+      ttext = 'You hugged ' + message.content.substring(5, message.content.length) + ' ! owo'
     }
     else{
-      ttext = "You hugged me ! owo"
+      ttext = 'You hugged me ! owo'
     }
     lien = "/GIF/hug/" + rnmbr + ".gif"
     file = new Discord.MessageAttachment('.' + lien);
@@ -253,47 +306,67 @@ client.on("message", async message => {
     message.channel.send({ files: [file], embed : msg })
   }
 
-  /*if(command == "play"){
-    players = fs.readFileSync("players.json")
-    players = JSON.parse(players)
-    if(message.author.id in players){
-      message.channel.send("You're already a player !")
+  if(message.channel.type != "dm"){
+
+    if(command == "play"){
+      players = fs.readFileSync("players.json")
+      players = JSON.parse(players)
+      if(message.author.id in players){
+        message.channel.send("You're already a player !")
+      }
+      else{
+        players[message.author.id] = {"cards":{}, "money":0, "dex":{}, "actual": "None"}
+        message.channel.send("Welcome to my game, master !\nI've send you a guide in pm ! :3")
+        // FAIRE UN GUIDE
+      }
+      players = JSON.stringify(players)
+      fs.writeFileSync("players.json", players, (err)=>{
+        if(err) throw err;
+      })
     }
-    else{
-      players[message.author.id] = {"waifus":{}, "money":0, "waifudex":{}, "actual": 1}
-      message.channel.send("Welcome to my game, master !")
-    }
-    players = JSON.stringify(players)
-    fs.writeFileSync("players.json", players, (err)=>{
-      if(err) throw err;
-    })
-  }
-  if(command == "gacha"){
-    players = fs.readFileSync("players.json")
-    players = JSON.parse(players)
-    if(message.author.id in players){
-      if(players[message.author.id]["money"]>= 50){
-        rnmbr = Math.ceil(Math.random()*nmbrwaifu)
-        while(rnmbr == 0){
-          rnmbr = Math.ceil(Math.random()*nmbrwaifu)
-        }
-        players[message.author.id]["money"] += -50
-        nwaifu = Object.keys(players[message.author.id]["waifus"]).length + 1
-        players[message.author.id]["waifus"][nwaifu] = [rnmbr, 1, 0, "nothing", "nothing", "nothing", "nothing", "nothing", "nothing", "nothing"] // id, lv, exp, tete, corp, bas, chassures, arme, bouclier, familier
-        message.channel.send("Congrats ! You got the waifu number " + rnmbr + " !")
-        if(rnmbr in players[message.author.id]["waifudex"]){
-          players[message.author.id]["waifudex"][rnmbr] += 1
-        }
-        else{
-          players[message.author.id]["waifudex"][rnmbr] = 1
+    
+    if(command == "catch"){ // ou faire spawn !!!
+      players = fs.readFileSync("players.json")
+      players = JSON.parse(players)
+      if(message.author.id in players){
+        if(message.channel.id in servers[message.guild.id]["spawnchannel"]){
+          if(servers[message.guild.id]["spawnchannel"][message.channel.id] != 0){
+            if(args[0] != undefined){
+              if(args[0] == servers[message.guild.id]["spawnchannel"][message.channel.id]){
+                rarity = "common"
+                cname = "test"
+                message.channel.send(message.author.username + " got a " + rarity + " " + cname + " !")
+                servers[message.guild.id]["spawnchannel"][message.channel.id] = 0
+                servers[message.guild.id]["compteur"] = 0
+                servers[message.guild.id]["toget"] = Math.round(Math.random()*100)+1
+                // AJOUT CARTE AU PROFIL
+              }
+            }
+          }
+          else{
+            message.channel.send("There's no card here ! :/")
+          }
         }
       }
+      else{
+        message.channel.send("Firstly, you need to do " + prefix + "play to start your adventure !")
+      }
+      players = JSON.stringify(players)
+      fs.writeFileSync("players.json", players, (err)=>{
+        if(err) throw err;
+      })
     }
-    players = JSON.stringify(players)
-    fs.writeFileSync("players.json", players, (err)=>{
-      if(err) throw err;
-    })
-  }*/
+
+    if(command == "redirect" && message.guild.members.cache.get(message.author.id).hasPermission("ADMINISTRATOR")){
+      if(args[0] != undefined){
+        servers[message.guild.id]["onlysp"] = args[0]
+      }
+      else{
+        servers[message.guild.id]["onlysp"] = message.channel.id
+      }
+      message.react('✅')
+    }
+  }
 
   if(message.channel.type == "dm"){
     continuation = 1
@@ -334,6 +407,15 @@ client.on("message", async message => {
     }
   }
 
+  if(command === "setprefix" && message.channel.type != "dm"){
+    if(args[0] != undefined){
+      if(message.guild.members.cache.get(message.author.id).hasPermission("ADMINISTRATOR")){
+        servers[message.guild.id]["prefix"] = args[0]
+        message.channel.send("Prefix changed to " + args[0] + " !\nIf you have an issue with the prefix, please do !issue in pm to say it to my masters , they'll say what to do.")
+      }
+    }
+  }
+
   if(command === "issues" && message.member.hasPermission("ADMINISTRATOR") && message.guild.id == "762743573966749756"){
     tickets = fs.readFileSync("tickets.json")
     tickets = JSON.parse(tickets)
@@ -362,42 +444,49 @@ client.on("message", async message => {
   }
 
   if(command === "ans" && message.member.hasPermission("ADMINISTRATOR") && message.guild.id == "762743573966749756"){
-    if("762779496108523522" == message.channel.id){
-      tickets = fs.readFileSync("tickets.json")
-      tickets = JSON.parse(tickets)
-      if('1' in tickets){
-        msg = message.content.substring(5, message.content.length)
-        myembed = {
-          color: 0x0099ff,
-          title: 'Here\'s your response !',
-          description: "Asking : " + tickets["1"][1] + "\nResponse by " + message.author.username + " : " + msg,
-          timestamp: new Date(),
-          footer: {
-            text: 'Ticket 1' + "/" + parseInt(Object.keys(tickets).length),
+    if(servers[message.guild.id]["issues"] != "0"){
+      if(servers[message.guild.id]["issues"] == message.channel.id){
+        tickets = fs.readFileSync("tickets.json")
+        tickets = JSON.parse(tickets)
+        if('1' in tickets){
+          msg = message.content.substring(5, message.content.length)
+          myembed = {
+            color: 0x0099ff,
+            title: 'Here\'s your response !',
+            description: "Asking : " + tickets["1"][1] + "\nResponse by " + message.author.username + " : " + msg,
+            timestamp: new Date(),
+            footer: {
+              text: 'Ticket 1' + "/" + parseInt(Object.keys(tickets).length),
+            }
+          };
+          client.users.cache.get(tickets["1"][0]).send({ embed : myembed })
+          delete tickets["1"];
+          if(servers[message.guild.id]["logs"] != "0"){
+            channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
+            msg = {
+              color: 0x0099ff,
+              title: "Issues",
+              description: message.author.username + ' answered to an issue !',
+              timestamp: new Date(),
+            };
+            channel.send({ embed : msg })
           }
-        };
-        client.users.cache.get(tickets["1"][0]).send({ embed : myembed })
-        delete tickets["1"];
-        channel = message.guild.channels.cache.get("762779496108523522")
-        msg = {
-          color: 0x0099ff,
-          title: "Issues",
-          description: message.author.username + ' answered to an issue !',
-          timestamp: new Date(),
-        };
-        channel.send({ embed : msg })
+        }
+        else{
+          message.channel.send("You answered to nothing !")
+        }
+        tickets = JSON.stringify(tickets)
+        fs.writeFileSync("tickets.json", tickets, (err)=>{
+          if(err) throw err;
+        })
       }
-      else{
-        message.channel.send("You answered to nothing !")
-      }
-      tickets = JSON.stringify(tickets)
-      fs.writeFileSync("tickets.json", tickets, (err)=>{
-        if(err) throw err;
-      })
+    }
+    else{
+      message.channel.send("Please use first " + prefix + "config issues <channelid or channeltag> to choose a specific channel.")
     }
   }
 
-  /*if(command === "show"){
+  /*if(command === "inv"){
     players = fs.readFileSync("players.json")
     players = JSON.parse(players)
     if(message.author.id in players){
@@ -417,7 +506,8 @@ client.on("message", async message => {
     fs.writeFileSync("players.json", players, (err)=>{
       if(err) throw err;
     })
-  }
+  }*/
+
   if(message.author.id == "705476118865772604"){
     if(command == "destroy"){
       players = fs.readFileSync("players.json")
@@ -425,6 +515,9 @@ client.on("message", async message => {
       if(args[0] in players){
         players[args[0]]["waifus"] = {}
         message.channel.send("Destroyed data !")
+      }
+      else{
+        message.channel.send("I dont know this user ! :/")
       }
       players = JSON.stringify(players)
       fs.writeFileSync("players.json", players, (err)=>{
@@ -438,12 +531,45 @@ client.on("message", async message => {
         players[args[0]]["money"] = parseInt(args[1])
         message.channel.send("Money set !")
       }
+      else{
+        message.channel.send("I dont know this user ! :/")
+      }
       players = JSON.stringify(players)
       fs.writeFileSync("players.json", players, (err)=>{
         if(err) throw err;
       })
     }
-  }*/
+    if(command == "addmoney"){
+      players = fs.readFileSync("players.json")
+      players = JSON.parse(players)
+      if(args[0] in players){
+        players[args[0]]["money"] += parseInt(args[1])
+        message.channel.send("Money added !")
+      }
+      else{
+        message.channel.send("I dont know this user ! :/")
+      }
+      players = JSON.stringify(players)
+      fs.writeFileSync("players.json", players, (err)=>{
+        if(err) throw err;
+      })
+    }
+    /*if(command == "addcard"){
+      players = fs.readFileSync("players.json")
+      players = JSON.parse(players)
+      if(args[0] in players){
+        players[args[0]]["cards"] += parseInt(args[1])
+        message.channel.send("Money added !")
+      }
+      else{
+        message.channel.send("I dont know this user ! :/")
+      }
+      players = JSON.stringify(players)
+      fs.writeFileSync("players.json", players, (err)=>{
+        if(err) throw err;
+      })
+    }*/
+  }
 
   if(command == "config" && message.member.hasPermission("ADMINISTRATOR")){
     if(args[0] != undefined){
@@ -556,7 +682,7 @@ client.on("message", async message => {
       if(message.member.hasPermission("ADMINISTRATOR")){
         reason = "None"
         if(args[1] != undefined){
-          reason = message.content.substring(6 + args[0].length, message.content.length)
+          reason = message.content.substring(5 + prefix.length + args[0].length, message.content.length)
         }
         if(servers[message.guild.id]["logs"] != "0"){
           channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
@@ -602,7 +728,7 @@ client.on("message", async message => {
       fields: [
         {
             name: 'Prefix',
-            value: "Prefix : " + config.prefix ,
+            value: "Prefix : " + prefix ,
         },
         {
             name: 'Config [<[logs or wchannel] channel id> or <antilink [on or off]>]',
@@ -655,7 +781,7 @@ client.on("message", async message => {
       if(message.member.hasPermission("ADMINISTRATOR")){
         reason = "None"
         if(args[1] != undefined){
-          reason = message.content.substring(6 + args[0].length, message.content.length)
+          reason = message.content.substring(6 + prefix.length + args[0].length, message.content.length)
         }
         if(servers[message.guild.id]["logs"] != "0"){
           channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
@@ -725,7 +851,7 @@ client.on("message", async message => {
           }
           reason = "None"
           if(args[2] != undefined){
-            reason = message.content.substring(8 + args[0].length + args[1].length, message.content.length)
+            reason = message.content.substring(7 + prefix.length + args[0].length + args[1].length, message.content.length)
           }
           if(servers[message.guild.id]["logs"] != "0"){
             channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
@@ -810,21 +936,17 @@ client.on("message", async message => {
     }
   }
 
-  /*
-  if(command === "reactionrole" && message.member.hasPermission("ADMINISTRATOR")){
+  /*if(command === "reactionrole" && message.member.hasPermission("ADMINISTRATOR")){
     if(args[0] == "list"){
       message.channel.send(Object.keys(servers[message.guild.id]["reactionrole"]))
     }
     else{
       if(args[0] == "add"){
         const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 300000 });
-        console.log(collector)
         message.channel.send("Firstly, tag the channel.")
         collector.on('collect', message => {
           if (message.content.startsWith("<#")) {
             channelid = message.content.substring(2, 20)
-            console.log(message.content)
-            console.log(channelid)
             collector.stop()
           }
         })
@@ -833,8 +955,6 @@ client.on("message", async message => {
           message.channel.send("Now, give me the message id please.")
           collector.on('collect', message => {
             messageid = message.content.substring(0, 20)
-            console.log(message.content)
-            console.log(messageid)
             collector.stop()
           })
           collector.on('end', collected => {
@@ -842,8 +962,6 @@ client.on("message", async message => {
             const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 300000 });
             collector.on('collect', message => {
               roleid = message.content.substring(3, 21)
-              console.log(message.content)
-              console.log(roleid)
               collector.stop()
             })
             collector.on('end', collected => {
@@ -851,22 +969,33 @@ client.on("message", async message => {
               const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 300000 });
               collector.on('collect', message => {
                 emoji = message.content
-                console.log(emoji)
                 collector.stop()
               })
               collector.on('end', collected => {
                 //Test channel etc
-                if(message.guild.channels.cache.find(c => c.id, channelid)){
+                if(message.guild.channels.cache.find(c => c.id === channelid)){
                   if(message.guild.channels.cache.get(channelid).fetch(messageid)){
-                    if(message.guild.roles.cache.find(r => r.id, roleid)){
-                      console.log()
-                      servers[message.guild.id]["reactionrole"] += {"channelid" : channelid, "messageid" : messageid, "role" : roleid, "emoji" : emoji}
+                    if(message.guild.roles.cache.find(r => r.id === roleid)){
+                      if(channelid in servers[message.guild.id]["reactionrole"]){
+                        servers[message.guild.id]["reactionrole"][channelid][messageid] = {"role" : roleid, "emoji" : emoji}
+                      }
+                      else{
+                        servers[message.guild.id]["reactionrole"][channelid] = {}
+                        servers[message.guild.id]["reactionrole"][channelid][messageid] = {"role" : roleid, "emoji" : emoji}
+                      }
+                      servers = JSON.stringify(servers)
+                      fs.writeFileSync("serverconfigs.json", servers, (err)=>{
+                        if(err) throw err;
+                      })
+                      servers = fs.readFileSync("serverconfigs.json")
+                      servers = JSON.parse(servers)
                       msg = {
                         color: 0x0099ff,
                         title: "Reactionrole",
                         description: message.author.username + ' added a reactionrole ! ' + "\nChannel id : " + channelid + "\nMessage id : " + messageid + "\nRole id : " + roleid + "\nEmoji : " + emoji,
                         timestamp: new Date(),
                       };
+                      console.log(servers[message.guild.id]["reactionrole"])
                       message.channel.send({ embed : msg })
                       if(servers[message.guild.id]["logs"] != "0"){
                         channel = message.guild.channels.cache.get(servers[message.guild.id]["logs"])
@@ -890,14 +1019,12 @@ client.on("message", async message => {
         });
       }
     }
-  }
-  */
+  }*/
 
   servers = JSON.stringify(servers)
   fs.writeFileSync("serverconfigs.json", servers, (err)=>{
     if(err) throw err;
   })
 });
-
 
 client.login(process.env.TOKEN);
